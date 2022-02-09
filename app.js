@@ -49,7 +49,7 @@ function changeSlide(direction) {
    
    //
    // 
-   let slider = document.querySelector('.slider')
+   let slider = document.querySelector('.sidebar')
   sliderList = slider.querySelector('.slider-list')
   sliderTrack = slider.querySelector('.slider-track')
   slides = slider.querySelectorAll('.slide')
@@ -59,8 +59,8 @@ function changeSlide(direction) {
   slideWidth = slides[0].offsetWidth
   slideIndex = 0
   posInit = 0
-  posX1 = 0
-  posX2 = 0
+  posY1 = 0
+  posY2 = 0
   posFinal = 0
   posThreshold = slideWidth * .35
   trfRegExp = /[-0-9.]+(?=px)/
@@ -85,7 +85,7 @@ function changeSlide(direction) {
          let evt = getEvent()
        
          // берем начальную позицию курсора по оси Х
-         posInit = posX1 = evt.clientX
+         posInit = posY1 = evt.clientY
        
          // убираем плавный переход, чтобы track двигался за курсором без задержки
          // т.к. он будет включается в функции slide()
@@ -104,10 +104,10 @@ function changeSlide(direction) {
            // считываем трансформацию с помощью регулярного выражения и сразу превращаем в число
            transform = +style.match(trfRegExp)[0]
        
-         posX2 = posX1 - evt.clientX
-         posX1 = evt.clientX
+         posX2 = posY1 - evt.clientY
+         posX1 = evt.clientY
        
-         sliderTrack.style.transform = `translate3d(${transform - posX2}px, 0px, 0px)`
+         sliderTrack.style.transform = `translate3d(${transform - posY2}px, 0px, 0px)`
          // можно было бы использовать метод строк .replace():
          // sliderTrack.style.transform = style.replace(trfRegExp, match => match - posX2)
          // но в дальнейшем нам нужна будет текущая трансформация в переменной
@@ -115,7 +115,7 @@ function changeSlide(direction) {
    
       swipeEnd = function() {
          // финальная позиция курсора
-         posFinal = posInit - posX1
+         posFinal = posInit - posY1
        
          document.removeEventListener('touchmove', swipeAction)
          document.removeEventListener('mousemove', swipeAction)
@@ -125,16 +125,16 @@ function changeSlide(direction) {
          // убираем знак минус и сравниваем с порогом сдвига слайда
          if (Math.abs(posFinal) > posThreshold) {
            // если мы тянули вправо, то уменьшаем номер текущего слайда
-           if (posInit < posX1) {
+           if (posInit < posY1) {
              slideIndex--
            // если мы тянули влево, то увеличиваем номер текущего слайда
-           } else if (posInit > posX1) {
+           } else if (posInit > posY1) {
              slideIndex++
            }
          }
        
          // если курсор двигался, то запускаем функцию переключения слайдов
-         if (posInit !== posX1) {
+         if (posInit !== posY1) {
            slide()
          }
        
